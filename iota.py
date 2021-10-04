@@ -85,7 +85,7 @@ def find_files(parent_url):
 
 def input_url():
     # Step 1
-    main_url = sys.argv[len(sys.argv) - 1]
+    main_url = sys.argv[-1]
     for i in range(1, len(sys.argv) - 1):
         if sys.argv[i] == '-img':
             find_img(main_url)
