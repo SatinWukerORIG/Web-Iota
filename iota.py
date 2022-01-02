@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-import sys
+from sys import argv
+from argparse import ArgumentParser
 
 """
 Main Process:
@@ -14,28 +15,9 @@ Step 4. Remove duplicates of the list and output
 def decoration(output):
     print('\n', output), print('--' * 20)
 
-def help_menu():
-    print("""
-    Iota 1.0
-    -img: find image
-    -files: kinds of file you want
-    -link: find links insert in the web page
-    -help: help""")
 
-# Step 4
 def remove_url_ends(url):
-    final_url = url.split('//')[1].split('/')[0]
-    return final_url
-
-#Step 4
-def remove_duplicates(arr):
-    new_arr = []
-    for i in arr:
-        if i not in new_arr:
-            new_arr.append(i)
-
-    for i in range(len(new_arr)):
-        print(f'[{i + 1}]', new_arr[i], sep='')
+    return url.split('//')[1].split('/')[0]
 
 
 def get_url(parent_url):
@@ -46,35 +28,42 @@ def get_url(parent_url):
     soup = BeautifulSoup(re.text, 'html.parser')
     return soup
 
-# Step 2
-def find_suburls(parent_url):
+# Find suburls or links of the web page
+def find_links(parent_url):
     url_list = []
+    url_prefix = remove_url_ends(parent_url)
     for link in get_url(parent_url).find_all('a'):
         try:
-            if 'http' in link.get('href'):
-                url_list.append(link.get('href'))
-            else:
-                # Step 3
-                url_list.append(remove_url_ends(parent_url) + link.get('href'))
+            url_list.append(link.get('href') if 'http' in link.get('href') else url_prefix + link.get('href'))
         except:
             continue
 
-    return url_list
+    decoration('Links:')
+    url_list = list(set(url_list))
+    for i in range(len(url_list)):
+        print(f'[{i + 1}]{url_list[i]}')
 
 
 def find_img(parent_url):
-    decoration('Images:')
     url_list = []
+    url_prefix = remove_url_ends(parent_url)
     for link in get_url(parent_url).find_all('img'):
-        url_list.append(link.get('src'))
-    return remove_duplicates(url_list)
+        url_list.append(link.get('src') if 'http' in link.get('src') else url_prefix + link.get('src'))
 
+    url_list = list(set(url_list))
+
+    decoration('Images:')
+    for i in range(len(url_list)):
+        print(f'[{i + 1}]{url_list[i]}')
+
+def find_all_img(url):
+    pass
 
 def find_files(parent_url):
     decoration('Files:')
     url_list = []
     suffix = input('file suffix: ')
-    for x in find_suburls(parent_url):
+    for x in find_links(parent_url):
         if suffix in x:
             print(x)
             url_list.append(x)
@@ -83,30 +72,24 @@ def find_files(parent_url):
         print("Couldn't find anything...")
 
 
-def input_url():
-    # Step 1
-    main_url = sys.argv[-1]
-    for i in range(1, len(sys.argv) - 1):
-        if sys.argv[i] == '-img':
-            find_img(main_url)
+def main():
+    # Parse command line arguments
+    parser = ArgumentParser()
+    parser.add_argument("url", nargs="?", default="", help='The URL of the target website/webpage')
+    parser.add_argument('-img', help='Find all of the image on the webpage', action='store_true')
+    parser.add_argument('-all_img', help='Find all of the image on the webpage and subwebpages', action='store_true')
+    parser.add_argument('-link', help='Find all of the suburls/links on the webpage', action='store_true')
+    args = parser.parse_args()
 
-        elif sys.argv[i] == '-link':
-            decoration('Links:')
-            remove_duplicates(find_suburls(main_url))
+    if args.img:
+        find_img(args.url)
 
-        elif sys.argv[i] == '-files':
-            find_files(main_url)
+    if args.all_img:
+        find_all_img(args.url)
 
-        elif sys.argv[i] == '-help':
-            help_menu()
-
-        else:
-            print('\n   Syntax is wrong...')
-            help_menu()
+    if args.link:
+        find_links(args.url)
 
 
-try:
-    input_url()
-
-except:
-    print('Interupted...')
+if __name__ == '__main__':
+    main()
