@@ -1,5 +1,5 @@
-# Iota-1.0
-Iota is a web scrapy which can find files in a web page, which include images, web links, and any kind of files you want.
+# Web Iota
+Iota is a web scrapy which can find all of the images and links/suburls on a webpage. To reach this goal, I used some python libraries such as [Selenium](https://github.com/SeleniumHQ/selenium), [Request](https://github.com/request/request), and [Beautifulsoup](https://pypi.org/project/bs4/)
 
 # Usage
 `python [options] [target url]`
