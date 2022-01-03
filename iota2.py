@@ -14,21 +14,27 @@ Step 4. Remove duplicates of the list and output
 
 driver = webdriver.PhantomJS()
 
+download_img = False
 
 def decoration(output):
-    print('\n', output), print('--' * 20)
+    print('\n', output, '\n', '--' * 20)
 
 
 def remove_url_ends(url):
-    return url.split('//')[1].split('/')[0]
+    if 'https' in url:
+        return 'https://' + url.split('//')[1].split('/')[0]
+    return 'http://' + url.split('//')[1].split('/')[0]
 
+def download_image(name, url):
+    with open(name, 'wb') as f:
+        f.write(requests.get(url).content)
 
 def get_html(parent_url):
     # head = {
     #     "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36"
     # }
     driver.get(parent_url)
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    soup = BeautifulSoup(str(driver.page_source), 'html.parser')
     return soup
 
 # Find suburls or links of the web page
@@ -50,7 +56,8 @@ def find_links(parent_url):
 def find_img(parent_url):
     url_list = []
     url_prefix = remove_url_ends(parent_url)
-    for link in get_html(parent_url).find_all('img'):
+    html = get_html(parent_url)
+    for link in html.find_all('img'):
         url_list.append(link.get('src') if 'http' in link.get('src') else url_prefix + link.get('src'))
 
     url_list = list(set(url_list))
@@ -58,6 +65,13 @@ def find_img(parent_url):
     decoration('Images:')
     for i in range(len(url_list)):
         print(f'[{i + 1}]{url_list[i]}')
+        if download_img:
+            try:
+                download_image(f'img[{i + 1}].png', url_list[i])
+                print('download successfully...')
+            except:
+                print('invalid image...')
+
 
 def find_all_img(url):
     pass
@@ -82,7 +96,11 @@ def main():
     parser.add_argument('-img', help='Find all of the image on the webpage', action='store_true')
     parser.add_argument('-all_img', help='Find all of the image on the webpage and subwebpages', action='store_true')
     parser.add_argument('-link', help='Find all of the suburls/links on the webpage', action='store_true')
+    parser.add_argument('--download', help='Download images', action='store_true')
     args = parser.parse_args()
+
+    global download_img
+    download_img = args.download
 
     if args.img:
         find_img(args.url)
