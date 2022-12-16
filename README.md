@@ -1,5 +1,5 @@
 # Web Iota
-Iota is a web scraper which can find all of the images and links/suburls on a webpage. To reach this goal, I used some python libraries such as [Selenium](https://github.com/SeleniumHQ/selenium), [Request](https://github.com/request/request), and [Beautifulsoup](https://pypi.org/project/bs4/)
+Iota is a web scraper that can find all of the images and links/suburls on a webpage. In order to implement these features, the code uses certain python libraries, [Selenium](https://github.com/SeleniumHQ/selenium), [Request](https://github.com/request/request), and [Beautifulsoup](https://pypi.org/project/bs4/)
 
 # Iota 1
 - Supports scraping images and links
