@@ -12,6 +12,9 @@ Iota is a web scraper which can find all of the images and links/suburls on a we
 - Able to parse JavaScript
 - Able to scrape most of the anti-scraping websites
 
+# Installation
+`pip install -r requirements.txt`
+
 # Usage
 Try to type `python iota1.py -h`
 ```
