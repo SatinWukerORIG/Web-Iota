@@ -93,11 +93,9 @@ class Instructions(HELPER):
         html = HELPER.get_html(parent_url) # soup(html)
 
         for link in html.find_all('img'):
-            src = link.get('src')
-            if HELPER.if_url(src):
-                url_list.append(src)
-            else:
-                url_list.append(url_prefix + src)
+            url_list.append(link.get('src')
+            if HELPER.if_url(link.get('src'))
+            else url_prefix + link.get('src'))
 
         return list(set(url_list))
 
